@@ -5,8 +5,8 @@ P = 101325
 pr = 886
 b = 8.2e-3
 g = 9.8
-tvf = 2.5e-5
-tvr = 4.2e-5
+tvf = 3.01e-5
+tvr = 15.38e-5
 tn = 1.832e-5
 td = 9.1e-3
 tV = 500
@@ -43,4 +43,9 @@ def error_propogation_V(vf, vr, n, d, V, e_V):
     q = (4*np.pi/3)*(sqrt_expr(vf,n) - (b/(2*P)))**3 *pr*g*d*(vf+vr)/(V**2*vf)*e_V
     return q
 
-print(error_propogation_V(tvf, tvr, tn, td, tV, te_V))
+def q(vf, vr, n, d, V):
+    return (4*np.pi/3)*(sqrt_expr(vf,n) - (b/(2*P)))**3 *pr*g*(vf+vr)/(V*vf)*d
+
+predicted_charge = q(tvf, tvr, tn, td, tV) / 1.60e-19
+print(f"q = {predicted_charge:.5f} e")
+print(error_propogation_V(tvf, tvr, tn, td, tV, te_V)) # 
