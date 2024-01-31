@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
 # Populate observables in an array
 
 P = 101325
@@ -51,14 +52,42 @@ def q(vf, vr, n, d, V):
 file_list = os.listdir('/Users/PLo/Desktop/2024_winter/phys_128L/phys128L_millikan_drop/vid_data')
 
 df_list = [pd.read_csv('/Users/PLo/Desktop/2024_winter/phys_128L/phys128L_millikan_drop/vid_data' + '/' + file) for file in file_list]
-df_list[0].columns = df_list[0].iloc[0].values.tolist()
-
-vr_list = df_list[0]["Velocity (m/sec)"].loc[df_list[0]["Type"] == "Rise"].astype(float).to_numpy()
-vf_list = df_list[0]["Velocity (m/sec)"].loc[df_list[0]["Type"] == "Fall"].astype(float).to_numpy()
 
 
-q_list = q(vf_list, vr_list, tn, td, tV)
-print(q_list)
+vr_list = df_list[0]["Velocity (m/s)"].loc[df_list[0]["Type"] == "Rise"].astype(float).to_numpy()
+vf_list = df_list[0]["Velocity (m/s)"].loc[df_list[0]["Type"] == "Fall"].astype(float).to_numpy()
+vr_d_list = df_list[0]["dv"].loc[df_list[0]["Type"] == "Rise"].astype(float).to_numpy()
+vf_d_list = df_list[0]["dv"].loc[df_list[0]["Type"] == "Fall"].astype(float).to_numpy()
+
+new_df = pd.DataFrame()
+new_df['Vr'] = vr_list
+new_df['Vf'] = vf_list
+new_df['d_Vr'] = vr_d_list
+new_df['d_Vf'] = vf_d_list
+new_df['q'] = q(vf_list, vr_list, tn, td, tV)/1e-19
+new_df.to_csv('/Users/PLo/Desktop/2024_winter/phys_128L/phys128L_millikan_drop/vid_data/new_df.csv')
+
+x = [1]*len(new_df['q'])
+plt.scatter(x, new_df['q'], color="blue", alpha=0.4)
+plt.show()
+
+"""
+q_trials = []
+for i, j in zip(file_list, range(len(file_list))):
+    df_list[j].columns = df_list[j].iloc[0].values.tolist()
+    vr_list = df_list[j]["Velocity (m/sec)"].loc[df_list[j]["Type"] == "Rise"].astype(float).to_numpy()
+    vf_list = df_list[j]["Velocity (m/sec)"].loc[df_list[j]["Type"] == "Fall"].astype(float).to_numpy()
+
+    q_list = q(vf_list, vr_list, tn, td, tV)
+
+"""
+    
+
+
+
+#need q for each trial
+
+q_list = q(vf_list, vr_list, tn, td, tV)/1e-19
 
 predicted_charge = q(tvf, tvr, tn, td, tV) / 1.60e-19
 print(f"q = {predicted_charge:.5f} e")
