@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import os
 # Populate observables in an array
 
 P = 101325
@@ -45,6 +47,18 @@ def error_propogation_V(vf, vr, n, d, V, e_V):
 
 def q(vf, vr, n, d, V):
     return (4*np.pi/3)*(sqrt_expr(vf,n) - (b/(2*P)))**3 *pr*g*(vf+vr)/(V*vf)*d
+
+file_list = os.listdir('/Users/PLo/Desktop/2024_winter/phys_128L/phys128L_millikan_drop/vid_data')
+
+df_list = [pd.read_csv('/Users/PLo/Desktop/2024_winter/phys_128L/phys128L_millikan_drop/vid_data' + '/' + file) for file in file_list]
+df_list[0].columns = df_list[0].iloc[0].values.tolist()
+
+vr_list = df_list[0]["Velocity (m/sec)"].loc[df_list[0]["Type"] == "Rise"].astype(float).to_numpy()
+vf_list = df_list[0]["Velocity (m/sec)"].loc[df_list[0]["Type"] == "Fall"].astype(float).to_numpy()
+
+
+q_list = q(vf_list, vr_list, tn, td, tV)
+print(q_list)
 
 predicted_charge = q(tvf, tvr, tn, td, tV) / 1.60e-19
 print(f"q = {predicted_charge:.5f} e")
